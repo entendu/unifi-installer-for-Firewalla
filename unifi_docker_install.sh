@@ -22,7 +22,7 @@ if [ ! -d "$path2" ]; then
 
 fi
 
-curl -s https://raw.githubusercontent.com/mbierman/unifi-installer/main/docker-compose.yaml > $path2/docker-compose.yaml
+curl -s https://raw.githubusercontent.com/entendu/unifi-installer-for-Firewalla/main/docker-compose.yaml > $path2/docker-compose.yaml
 sudo chown pi $path2/docker-compose.yaml
 sudo chmod +rw $path2/docker-compose.yaml
 echo -e "\n✅ unifi yaml created."
@@ -49,11 +49,11 @@ echo "configuring networks..."
 ID=$(sudo docker network ls | awk '$2 == "unifi_default" {print $1}')
 
 while true; do
-    if ping -W 1 -c 1 172.16.1.2 > /dev/null 2>&1 && ip route show table lan_routable | grep -q '172.16.1.0'; then
+    if ping -W 1 -c 1 172.69.1.2 > /dev/null 2>&1 && ip route show table lan_routable | grep -q '172.69.1.0'; then
         break
     fi
-    sudo ip route add 172.16.1.0/24 dev br-$ID table lan_routable
-    sudo ip route add 172.16.1.0/24 dev br-$ID table wan_routable
+    sudo ip route add 172.69.1.0/24 dev br-$ID table lan_routable
+    sudo ip route add 172.69.1.0/24 dev br-$ID table wan_routable
 
 done
 
@@ -64,7 +64,7 @@ dns_settings=/home/pi/.firewalla/config/dnsmasq_local/unifi
 sudo touch $dns_settings
 sudo chown pi $dns_settings
 sudo chmod a+rw $dns_settings
-echo address=/unifi/172.16.1.2 > ~/.firewalla/config/dnsmasq_local/unifi
+echo address=/unifi/172.69.1.2 > ~/.firewalla/config/dnsmasq_local/unifi
 echo -e "\n✅ unifi network settings saved."
 sleep 10
 sudo systemctl restart firerouter_dns
@@ -90,9 +90,9 @@ echo "#!/bin/bash
 sudo systemctl start docker
 sudo systemctl start docker-compose@unifi
 sudo ipset create -! docker_lan_routable_net_set hash:net
-sudo ipset add -! docker_lan_routable_net_set 172.16.1.0/24
+sudo ipset add -! docker_lan_routable_net_set 172.69.1.0/24
 sudo ipset create -! docker_wan_routable_net_set hash:net
-sudo ipset add -! docker_wan_routable_net_set 172.16.1.0/24" >  $path3/start_unifi.sh
+sudo ipset add -! docker_wan_routable_net_set 172.69.1.0/24" >  $path3/start_unifi.sh
 
 chmod a+x $path3/start_unifi.sh
 chown pi  $path3/start_unifi.sh
@@ -107,5 +107,5 @@ echo -e "\nStarting the container, please wait....\n"
 
 ready
 
-echo -e "Done!\n\nYou can open https://172.16.1.2:8443 in your favorite browser and set up your UniFi Controller. \n\nNote it may not have a certificate so the browser may give you a security warning.\n\nAlso note the container may take a minute to be accessible as the web server starts. Give it a minute or two and refresh your browser.\n\n"
+echo -e "Done!\n\nYou can open https://172.69.1.2:8443 in your favorite browser and set up your UniFi Controller. \n\nNote it may not have a certificate so the browser may give you a security warning.\n\nAlso note the container may take a minute to be accessible as the web server starts. Give it a minute or two and refresh your browser.\n\n"
 echo -e "\n\n To update the unifi docker container in the future, go to\n/home/pi/.firewalla/run/docker \n and run\n./updatedocker.sh unifi\n\n"
