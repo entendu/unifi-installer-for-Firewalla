@@ -10,7 +10,7 @@ services:
     networks:
       default:
         # static IP address for unifi controller
-        ipv4_address: 172.16.1.2
+        ipv4_address: 172.69.1.2
 
 networks:
   default:
@@ -18,4 +18,4 @@ networks:
     ipam:
      config:
        # your chosen docker network here
-       - subnet: 172.16.1.0/24
+       - subnet: 172.69.1.0/24
